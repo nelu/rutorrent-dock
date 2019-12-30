@@ -1,0 +1,22 @@
+version: '2.2'
+
+services:
+
+  common-service:
+    image: ${SERVICE_IMAGE}
+    build: ./src
+    restart: on-failure
+    env_file:
+      - config/rutorrent/app.env
+    environment:
+      - LOGS_DIR
+    volumes:
+      - ${LOGS_DIR}:/var/log/rutorrent:rw
+      - /srv/data/rtorrent:/data/downloads:rw
+#     - ./src:/usr/src/app:rw
+    logging:
+      driver: "json-file"
+      options:
+        max-file: '2'
+        max-size: 10m
+ 

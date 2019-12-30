@@ -1,0 +1,45 @@
+version: '2.2'
+
+services:
+
+  # apache front
+  web:
+    extends:
+      service: common-service
+      file: common.yml
+
+#    depends_on:
+#      - rtorrent
+    volumes:
+      - ./config/rutorrent/config.php:/usr/src/app/conf/config.php
+    ports:
+      - "80:80"
+
+  # php wamp server
+  rtorrent:
+    extends:
+      service: common-service
+      file: common.yml
+    command: gosu www-data sh -c '/usr/bin/rm -rf /data/.session/rtorrent.lock && rtorrent || rtorrent'
+    stdin_open: true
+    tty: true
+    networks:
+      default:
+        ipv4_address: 172.200.23.3
+    volumes_from:
+      - web:rw
+    volumes:
+      - ./config/rtorrent.conf:/var/www/.rtorrent.rc
+    expose:
+      - "5000"
+    ports:
+      - "55950-56000:55950-56000/tcp"
+      - "55950-56000:55950-56000/udp"
+
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.200.23.0/24
+        
