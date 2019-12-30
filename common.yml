@@ -12,6 +12,7 @@ services:
       - LOGS_DIR
     volumes:
       - ${LOGS_DIR}:/var/log/rutorrent:rw
+      - /srv/data/tmp:/tmp:rw
       - /srv/data/rtorrent:/data/downloads:rw
 #     - ./src:/usr/src/app:rw
     logging:
