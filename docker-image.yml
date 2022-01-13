@@ -1,0 +1,21 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'src/Dockerfile'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'src/Dockerfile'
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag unzel/rutorrent-filemanager:$(date +%s)
