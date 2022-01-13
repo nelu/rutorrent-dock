@@ -3,7 +3,7 @@
 #
 ############################################################
 
-FROM php:7.1.33-apache
+FROM php:7.4.27-apache
 
 MAINTAINER hwk <user@somedomain.com>
 
