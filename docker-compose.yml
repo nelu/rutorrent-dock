@@ -1,5 +1,7 @@
 version: '2.2'
 
+# with traefik support on /rt/ endpoint
+
 services:
 
   # apache front
@@ -9,21 +11,28 @@ services:
       file: common.yml
     restart: always
     volumes:
-      - ./src/rutorrent:/usr/src/app
-      - ./config/rutorrent/media.php:/usr/src/app/plugins/filemanager-media/conf.php:ro
-      - ./config/rutorrent/vhost.conf:/etc/apache2/sites-enabled/000-default.conf
+#      - ./config/rutorrent/vhost.conf:/etc/apache2/sites-enabled/000-default.conf
       - ${LOGS_DIR}:/var/log/rutorrent:rw
       - ${RUTORRENT_TEMP_DIR}:/tmp:rw
       - ${RUTORRENT_DATA_DIR}/downloads:/data/downloads:rw
-      - /mnt/store:/data/archive:rw
       - ${RUTORRENT_DATA_DIR}/.session:/data/.session:rw
       - ${RUTORRENT_SHARE_DIR}:/usr/src/app/share:rw
+      - ./config/rutorrent/conf:/usr/src/app/conf:ro
+#      - ./config/rutorrent/media.php:/usr/src/app/plugins/filemanager-media/conf.php:ro
+
+      # local dev mount
+#      - ${RUTORRENT_SRC_DIR}:/var/www/html
+
+    # uncomment if traefik is not used
+    ports:
+      - "80:80/tcp"
 
     expose:
       - 80
     networks:
-      - default
-      - webgateway  
+      default:
+        ipv4_address: 172.200.23.2
+#      - webgateway  #traefik network
     labels:
        - "traefik.enable=true"
        - "traefik.docker.network=webrouter_gateway"
@@ -34,7 +43,7 @@ services:
        - "traefik.http.middlewares.rutorrentAuth.basicauth.removeheader=true"
        - "traefik.http.routers.rutorrent.middlewares=strip-rutorrent-prefix@docker,rutorrentAuth@docker"
 
-  # php wamp server
+  # jailed rtorrent xml-rpc server
   rtorrent:
     extends:
       service: common-service
@@ -54,7 +63,6 @@ services:
       - ${LOGS_DIR}:/var/log/rutorrent:rw
       - ${RUTORRENT_TEMP_DIR}:/tmp:rw
       - ${RUTORRENT_DATA_DIR}/downloads:/data/downloads:rw
-      - /mnt/store:/data/archive:rw
       - ${RUTORRENT_DATA_DIR}/.session:/data/.session:rw
     expose:
       - "5000"
@@ -64,9 +72,9 @@ services:
 
 
 networks:
-  webgateway:
-    external:
-      name: webrouter_gateway
+#  webgateway:
+#    external:
+#      name: webrouter_gateway
   default:
     ipam:
       driver: default

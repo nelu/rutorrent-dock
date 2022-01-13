@@ -8,9 +8,6 @@ services:
     restart: on-failure
     env_file:
       - config/rutorrent/app.env
-    environment:
-      - LOGS_DIR
-#     - ./src:/usr/src/app:rw
     logging:
       driver: "json-file"
       options:
