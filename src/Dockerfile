@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y sudo gosu bash unzip g++ make file re2c
 	&& rm -rf /usr/local/etc/php/conf.d/*sockets.ini && docker-php-ext-enable --ini-name 20-sockets.ini sockets \
     && docker-php-ext-install  pcntl \
     && rm -rf /usr/local/etc/php/conf.d/*pcntl.ini && docker-php-ext-enable --ini-name 10-pcntl.ini pcntl \
-    && apt-get remove -y g++ make re2c autoconf libssl-dev libevent-dev libstdc++-8-dev g++-8 \
+    && apt-get remove -y g++ make re2c autoconf libssl-dev libevent-dev g++-8 \
     && docker-php-source delete \
     && groupadd -g 1000 runuser && useradd -u 1000 -g 1000 -m runuser && usermod -a -G www-data runuser \
     && curl https://www.rarlab.com/rar/rarlinux-x64-5.7.1.tar.gz | tar -xzvf - -C /tmp/ \
