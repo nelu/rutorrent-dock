@@ -2,21 +2,16 @@
 
 Sample docker-compose project for running ruTorrent locally
 
-Cloning repositories and setting permissions for dev env:
-```bash
- git clone https://github.com/nelu/rutorrent-dock.git && cd rutorrent-dock/src \
- && git clone https://github.com/Novik/ruTorrent.git rutorrent \
- && cd "rutorrent/plugins" \
- && git clone https://github.com/nelu/rutorrent-filemanager.git "filemanager" \
- && git clone https://github.com/nelu/rutorrent-filemanager-media.git "filemanager-media" \
- && git clone https://github.com/nelu/rutorrent-filemanager-share.git "filemanager-share" \
- && cd ../../../ \
- && chmod 755 -R "./src/rutorrent" \
- && chown 1000:1000 -R "./bt"
-```
-
+Sample ruTorrent configurations can be found in `./config/`
 
 Any environment variables that needs to be used inside the containers can be edited in `config/rutorrent/app.env`
+
+
+Cloning project and setting permissions for rTorrent and ruTorrent data:
+```bash
+ git clone https://github.com/nelu/rutorrent-dock.git && cd rutorrent-dock \
+ && chown 1000:1000 -R "./bt"
+```
 
 Host machine mount paths are configurable in the project `.env` file:
  ```
@@ -27,14 +22,12 @@ Host machine mount paths are configurable in the project `.env` file:
  RUTORRENT_SRC_DIR - path to local source code for rutorrent
  ```
 See docker-compose.yml on how these variables and `./config/` files are being used 
-${RUTORRENT_SRC_DIR} mount must be uncommented in docker-compose.yml to make use of ./src/rutorrent. Take note that it will use configurations from ./config
 
 Here is a config example where all container generated data is stored inside the project `./bt` directory :
 ```dotenv
 LOGS_DIR=./bt/logs
 RUTORRENT_TEMP_DIR=./bt/tmp
 RUTORRENT_DATA_DIR=./bt/data
-RUTORRENT_SHARE_DIR=./bt/rutorrent-share
 
 RUTORRENT_SRC_DIR=./src/rutorrent
 ```
@@ -43,6 +36,8 @@ and might cause permission issues when running the project.
 
 You can set permissions with:
 ```bash chown 1000:1000 -R "./bt" ```
+
+Contents of `./src/rutorrent` are created automatically if the directory is empty from the 'web' container sources
 
 
 Run using prebuilt image:
