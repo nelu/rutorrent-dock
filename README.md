@@ -37,7 +37,7 @@ and might cause permission issues when running the project.
 You can set permissions with:
 ```bash chown 1000:1000 -R "./bt" ```
 
-Contents of `./src/rutorrent` are created automatically if the directory is empty from the 'web' container sources
+Contents of `./src/rutorrent` are created automatically from the 'web' container sources if the directory is empty 
 
 
 Run using prebuilt image:
