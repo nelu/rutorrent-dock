@@ -39,7 +39,7 @@ RUN curl https://codeload.github.com/Novik/ruTorrent/tar.gz/master | tar -xzf - 
     && chmod 755 -R "$APP_HOME" \
     && chown -R www-data:www-data "$APP_HOME" "$STORAGE_DIR" /var/www \
     && rm -rf /var/www/html \
-    && ln -s $APP_HOME /var/www/html \
+#    && ln -s $APP_HOME /var/www/html \
     && ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load \
     && ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/proxy.load \
     && ln -s /etc/apache2/mods-available/remoteip.load /etc/apache2/mods-enabled/remoteip.load
@@ -47,10 +47,15 @@ RUN curl https://codeload.github.com/Novik/ruTorrent/tar.gz/master | tar -xzf - 
 #    && ln -s "$APP_HOME/entrypoints/vhost.conf" /etc/apache2/sites-enabled/000-default.conf
 COPY vhost.conf /etc/apache2/sites-enabled/000-default.conf
 COPY --chown=runuser:runuser rtorrent.conf /home/runuser/.rtorrent.rc
+COPY entrypoint.sh  /usr/local/bin/entrypoint.sh
+COPY config.php "$APP_HOME/conf/"
+
 
 STOPSIGNAL TERM
 
-VOLUME ["$STORAGE_DIR", "$APP_HOME/share"]
+VOLUME ["$STORAGE_DIR", "/var/www/html"]
+
+CMD entrypoint.sh
 
 WORKDIR $APP_HOME
 

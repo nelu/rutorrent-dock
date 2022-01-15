@@ -11,17 +11,16 @@ services:
       file: common.yml
     restart: always
     volumes:
-#      - ./config/rutorrent/vhost.conf:/etc/apache2/sites-enabled/000-default.conf
       - ${LOGS_DIR}:/var/log/rutorrent:rw
       - ${RUTORRENT_TEMP_DIR}:/tmp:rw
-      - ${RUTORRENT_DATA_DIR}/downloads:/data/downloads:rw
-      - ${RUTORRENT_DATA_DIR}/.session:/data/.session:rw
-      - ${RUTORRENT_SHARE_DIR}:/usr/src/app/share:rw
-      - ./config/rutorrent/conf:/usr/src/app/conf:ro
+      - ${RUTORRENT_DATA_DIR}:/data:rw
+#      - ./config/rutorrent/vhost.conf:/etc/apache2/sites-enabled/000-default.conf
+#      - ${RUTORRENT_SHARE_DIR}:/usr/src/app/share:rw
+#      - ./config/rutorrent/conf:/usr/src/app/conf:ro
 #      - ./config/rutorrent/media.php:/usr/src/app/plugins/filemanager-media/conf.php:ro
 
       # local dev mount
-#      - ${RUTORRENT_SRC_DIR}:/var/www/html
+      - ${RUTORRENT_SRC_DIR}:/var/www/html
 
     # uncomment if traefik is not used
     ports:
@@ -60,10 +59,6 @@ services:
     volumes:
 #      - ./config/rtorrent.conf:/var/www/.rtorrent.rc:rw
       - ./config/rtorrent.conf:/home/runuser/.rtorrent.rc:rw
-      - ${LOGS_DIR}:/var/log/rutorrent:rw
-      - ${RUTORRENT_TEMP_DIR}:/tmp:rw
-      - ${RUTORRENT_DATA_DIR}/downloads:/data/downloads:rw
-      - ${RUTORRENT_DATA_DIR}/.session:/data/.session:rw
     expose:
       - "5000"
     ports:
