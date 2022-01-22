@@ -49,6 +49,12 @@ Run using prebuilt image:
 
 Build image from src/Dockerfile:
 
-``` docker-compose build && docker-compose up -V ```
+ ``` docker-compose build && docker-compose up -V ```
+
+Build multi arch images from common.yml using buildx:
+
+ ``` bash
+ env $(cat .env | grep -v "#" | xargs) docker buildx bake -f common.yml --set *.platform=linux/amd64,linux/arm64,linux/arm/v7,linux/386 
+ ```
 
 You should have rutorrent running on http://172.200.23.2/ in the 172.200.23.0/24 subnet

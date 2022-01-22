@@ -4,7 +4,6 @@ services:
 
   common-service:
     image: ${SERVICE_IMAGE}
-    build: ./src
     restart: on-failure
     env_file:
       - config/rutorrent/app.env
@@ -13,4 +12,39 @@ services:
       options:
         max-file: '2'
         max-size: 10m
- 
+
+  service_x64:
+    image: ${SERVICE_IMAGE}
+    build:
+      target: appbuild
+      args:
+        BUILDPLATFORM: linux/amd64
+        BUILDPLATFORM_SHORT: x64
+      context: ./src
+
+  service_x86:
+    image: ${SERVICE_IMAGE}
+    build:
+      target: appbuild
+      args:
+        BUILDPLATFORM: linux/386
+        BUILDPLATFORM_SHORT: x32
+      context: ./src
+
+  service_arm64:
+        image: ${SERVICE_IMAGE}
+        build:
+          target: appbuild
+          args:
+            BUILDPLATFORM: linux/arm64
+            BUILDPLATFORM_SHORT: arm
+          context: ./src
+
+  service_arm32:
+    image: ${SERVICE_IMAGE}
+    build:
+      target: appbuild
+      args:
+        BUILDPLATFORM: linux/arm/v7
+        BUILDPLATFORM_SHORT: arm
+      context: ./src
