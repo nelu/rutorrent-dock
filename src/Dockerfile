@@ -13,7 +13,7 @@ ENV PATH        $PATH:$APP_HOME
 
 
 RUN apt-get update && apt-get install -y sudo gosu bash unzip g++ make file re2c autoconf openssl libssl-dev libevent-dev \
-     rtorrent mediainfo gzip screen ffmpeg zip\
+     rtorrent mediainfo gzip screen p7zip-full ffmpeg zip\
     && docker-php-ext-install sockets \
 	&& rm -rf /usr/local/etc/php/conf.d/*sockets.ini && docker-php-ext-enable --ini-name 20-sockets.ini sockets \
     && docker-php-ext-install  pcntl \

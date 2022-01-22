@@ -35,7 +35,9 @@ Since they are bind volume mounts, all paths will be created empty by docker on 
 and might cause permission issues when running the project.
 
 You can set permissions with:
-```bash chown 1000:1000 -R "./bt" ```
+```bash 
+chown 1000:1000 -R "./bt" 
+```
 
 Contents of `./src/rutorrent` are created automatically from the 'web' container sources if the directory is empty 
 
