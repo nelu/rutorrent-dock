@@ -72,7 +72,7 @@ COPY config.php "$APP_HOME/conf/"
 
 
 FROM srcbuild as appbuild
-MAINTAINER hwk <user@somedomain.com>
+MAINTAINER hwk <nelu@github.com>
 ARG STORAGE_DIR=/data
 
 ENV APP_HOME 	/usr/src/app

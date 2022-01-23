@@ -71,7 +71,7 @@ export $(grep -v '^#' .env | xargs) && \
 docker buildx bake -f common.yml \
 	--set *.platform=linux/amd64,linux/arm64,linux/arm/v7,linux/386 \
 	--set *.tags=unzel/rutorrent-filemanager:latest \
-	--set *.tags=unzel/rutorrent-filemanager:0.2 \
+	--set *.tags=${SERVICE_IMAGE} \
 	--push
 	
  ```
