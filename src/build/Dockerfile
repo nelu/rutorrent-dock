@@ -78,8 +78,6 @@ ARG STORAGE_DIR=/data
 ENV APP_HOME 	/usr/src/app
 ENV PATH        $PATH:$APP_HOME
 
-
-
 RUN chown -R www-data:www-data "$APP_HOME"
 
 STOPSIGNAL TERM
