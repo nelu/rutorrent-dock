@@ -1,4 +1,4 @@
-name: Multiarch Docker Image Build
+name: Multiarch Build
 
 on:
   release:
