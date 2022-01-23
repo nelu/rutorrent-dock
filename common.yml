@@ -5,7 +5,7 @@ services:
   common-service:
     image: ${SERVICE_IMAGE}
     build:
-      target: appbuild
+      #target: appbuild
       args:
         FILEMANAGER_VER: master
         RUTORRENT_VER: master

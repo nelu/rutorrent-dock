@@ -36,7 +36,7 @@ COPY entrypoint.sh  /usr/local/bin/entrypoint.sh
 
 
 FROM osbuild as srcbuild
-ARG ARCH
+ARG TARGETPLATFORM
 
 ARG STORAGE_DIR=/data
 ARG UID=1000
@@ -49,10 +49,10 @@ ARG FILEMANAGER_SHARE_VER=master
 
 ENV APP_HOME 	/usr/src/app
 
-RUN  $(echo "${ARCH}" | grep -vq "arm") \
-                   && { BUILDPLATFORM_SHORT=$(echo "${ARCH}" | grep -q "64" && echo "x64" || echo "x32"); \
-                       curl https://www.rarlab.com/rar/rarlinux-${BUILDPLATFORM_SHORT}-610b3.tar.gz | tar -xzvf - -C /tmp/ \
-                       && cp -rfp /tmp/rar/rar /usr/bin/rar ; }
+RUN  echo "${TARGETPLATFORM}" | grep -q "arm" \
+           || { BUILDPLATFORM_SHORT=$(echo "${TARGETPLATFORM}" | grep -q "64" && echo "x64" || echo "x32"); \
+               curl https://www.rarlab.com/rar/rarlinux-${BUILDPLATFORM_SHORT}-610b3.tar.gz | tar -xzvf - -C /tmp/ \
+               && cp -rfp /tmp/rar/rar /usr/bin/rar ; } && exit 0;
 
 RUN mkdir -p "$APP_HOME" "$STORAGE_DIR/downloads" "$STORAGE_DIR/.session" \
     && curl https://codeload.github.com/Novik/ruTorrent/tar.gz/${RUTORRENT_VER} | tar -xzf - --overwrite-dir --strip-components=1 -C "$APP_HOME" \
@@ -71,15 +71,14 @@ RUN mkdir -p "$APP_HOME" "$STORAGE_DIR/downloads" "$STORAGE_DIR/.session" \
 COPY config.php "$APP_HOME/conf/"
 
 
-FROM osbuild as appbuild
+FROM srcbuild as appbuild
 MAINTAINER hwk <user@somedomain.com>
 ARG STORAGE_DIR=/data
 
 ENV APP_HOME 	/usr/src/app
 ENV PATH        $PATH:$APP_HOME
 
-COPY --from=srcbuild "$APP_HOME" "$APP_HOME"
-COPY --from=srcbuild "$STORAGE_DIR" "$STORAGE_DIR"
+
 
 RUN chown -R www-data:www-data "$APP_HOME"
 
