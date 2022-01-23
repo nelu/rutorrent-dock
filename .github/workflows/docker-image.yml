@@ -1,14 +1,16 @@
 name: Docker Image CI
 
 on:
-  push:
-    branches: [ master ]
-    paths:
-      - 'src/build/**'
-  pull_request:
-    branches: [ master ]
-    paths:
-      - './.env'
+  release:
+    types: [published]
+#  push:
+#    branches: [ master ]
+#    paths:
+#      - 'src/build/**'
+#  pull_request:
+#    branches: [ master ]
+#    paths:
+#      - './.env'
 
 jobs:
 
@@ -30,4 +32,4 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USER }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Build the Docker image
-      run: export $(grep -v '^#' .env | xargs) && docker buildx bake -f common.yml --set *.platform=linux/amd64,linux/386,linux/arm64,linux/arm/v7 --set *.tags=unzel/rutorrent-filemanager:latest --set *.tags=${SERVICE_IMAGE} --push
+      run: export $(grep -v '^#' .env | xargs) && docker buildx bake -f common.yml --set *.platform=linux/amd64,linux/386,linux/arm64,linux/arm/v7 --set *.tags=unzel/rutorrent-filemanager:latest --set *.tags=unzel/rutorrent-filemanager:${GITHUB_REF} --push
