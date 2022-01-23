@@ -69,4 +69,5 @@ docker buildx bake -f common.yml \
 	
  ```
 
-You should have rutorrent running on http://172.200.23.2/ in the 172.200.23.0/24 subnet
+
+You should have rutorrent running on http://<docker-host>:80/ inside the 172.200.23.0/24 docker subnet
