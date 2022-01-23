@@ -1,5 +1,5 @@
 # rutorrent-dock
-[![Docker Images CI](https://github.com/nelu/rutorrent-dock/actions/workflows/docker-image.yml/badge.svg?branch=master&event=release)](https://github.com/nelu/rutorrent-dock/actions/workflows/docker-image.yml)
+[![Multiarch Build](https://github.com/nelu/rutorrent-dock/actions/workflows/docker-image.yml/badge.svg)](https://github.com/nelu/rutorrent-dock/actions/workflows/docker-image.yml)
 
 Sample docker-compose project for running ruTorrent locally
 
