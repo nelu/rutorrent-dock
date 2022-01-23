@@ -4,6 +4,14 @@ services:
 
   common-service:
     image: ${SERVICE_IMAGE}
+    build:
+      target: appbuild
+      args:
+        FILEMANAGER_VER: master
+        RUTORRENT_VER: master
+        FILEMANAGER_SHARE_VER: master
+        FILEMANAGER_MEDIA_VER: master
+      context: ./src/build
     restart: on-failure
     env_file:
       - config/rutorrent/app.env
@@ -12,36 +20,3 @@ services:
       options:
         max-file: '2'
         max-size: 10m
-
-  service_x64:
-    image: ${SERVICE_IMAGE}
-    build:
-      target: appbuild
-      args:
-        FILEMANAGER_VER: master
-        BUILDPLATFORM: linux/amd64
-      context: ./src/build
-
-  service_x86:
-    image: ${SERVICE_IMAGE}
-    build:
-      target: appbuild
-      args:
-        BUILDPLATFORM: linux/386
-      context: ./src/build
-
-  service_arm64:
-    image: ${SERVICE_IMAGE}
-    build:
-      target: appbuild
-      args:
-        BUILDPLATFORM: linux/arm64
-      context: ./src/build
-
-  service_arm32:
-    image: ${SERVICE_IMAGE}
-    build:
-      target: appbuild
-      args:
-        BUILDPLATFORM: linux/arm/v7
-      context: ./src/build

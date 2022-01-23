@@ -3,10 +3,11 @@
 #
 ############################################################
 
-FROM --platform=$BUILDPLATFORM php:7.4.27-apache as osbuild
+ARG ARCH
+
+FROM ${ARCH}php:7.4.27-apache as osbuild
 ARG UID=1000
 ARG GID=1000
-
 RUN apt update && apt install -y sudo gosu bash unzip g++ make file re2c autoconf openssl libssl-dev libevent-dev \
      rtorrent mediainfo gzip screen p7zip-full ffmpeg zip unrar-free \
     && docker-php-ext-install sockets \
@@ -28,37 +29,30 @@ RUN apt update && apt install -y sudo gosu bash unzip g++ make file re2c autocon
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /usr/src/php.tar.xz
 
+
 COPY vhost.conf /etc/apache2/sites-enabled/000-default.conf
 COPY --chown=${UID}:${GID} rtorrent.conf /home/runuser/.rtorrent.rc
 COPY entrypoint.sh  /usr/local/bin/entrypoint.sh
 
-FROM --platform=$BUILDPLATFORM osbuild as appbuild
 
-MAINTAINER hwk <user@somedomain.com>
-ARG BUILDPLATFORM
+FROM osbuild as srcbuild
+ARG ARCH
 
+ARG STORAGE_DIR=/data
 ARG UID=1000
 ARG GID=1000
+
 ARG RUTORRENT_VER=master
 ARG FILEMANAGER_VER=master
 ARG FILEMANAGER_MEDIA_VER=master
 ARG FILEMANAGER_SHARE_VER=master
 
 ENV APP_HOME 	/usr/src/app
-ENV STORAGE_DIR     /data
-ENV PATH        $PATH:$APP_HOME
 
-ENV APP_HOME 	/usr/src/app
-ENV STORAGE_DIR     /data
-ENV PATH        $PATH:$APP_HOME
-
-
-
-RUN $(echo "${BUILDPLATFORM}" | grep -vq "arm") \
-               && { BUILDPLATFORM_SHORT=$(echo "${BUILDPLATFORM}" | grep -q "64" && echo "x64" || echo "x32"); \
-                   curl "https://www.rarlab.com/rar/rarlinux-${BUILDPLATFORM_SHORT}-610b3.tar.gz" | tar -xzvf - -C /tmp/ \
-                   && cp -rfp /tmp/rar/rar /usr/bin/rar ; \
-                   }
+RUN  $(echo "${ARCH}" | grep -vq "arm") \
+                   && { BUILDPLATFORM_SHORT=$(echo "${ARCH}" | grep -q "64" && echo "x64" || echo "x32"); \
+                       curl https://www.rarlab.com/rar/rarlinux-${BUILDPLATFORM_SHORT}-610b3.tar.gz | tar -xzvf - -C /tmp/ \
+                       && cp -rfp /tmp/rar/rar /usr/bin/rar ; }
 
 RUN mkdir -p "$APP_HOME" "$STORAGE_DIR/downloads" "$STORAGE_DIR/.session" \
     && curl https://codeload.github.com/Novik/ruTorrent/tar.gz/${RUTORRENT_VER} | tar -xzf - --overwrite-dir --strip-components=1 -C "$APP_HOME" \
@@ -77,6 +71,16 @@ RUN mkdir -p "$APP_HOME" "$STORAGE_DIR/downloads" "$STORAGE_DIR/.session" \
 COPY config.php "$APP_HOME/conf/"
 
 
+FROM osbuild as appbuild
+MAINTAINER hwk <user@somedomain.com>
+ARG STORAGE_DIR=/data
+
+ENV APP_HOME 	/usr/src/app
+ENV PATH        $PATH:$APP_HOME
+
+COPY --from=srcbuild "$APP_HOME" "$APP_HOME"
+COPY --from=srcbuild "$STORAGE_DIR" "$STORAGE_DIR"
+
 RUN chown -R www-data:www-data "$APP_HOME"
 
 STOPSIGNAL TERM
@@ -86,3 +90,5 @@ VOLUME ["$STORAGE_DIR", "/var/www/html"]
 CMD entrypoint.sh
 
 WORKDIR $APP_HOME
+
+

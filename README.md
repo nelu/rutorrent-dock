@@ -54,10 +54,17 @@ Build image from src/Dockerfile:
 Build multi arch images from common.yml using buildx:
 
  ``` bash
+ # build the local arch image 
+ export $(grep -v '^#' .env | xargs) && \
+ docker buildx bake -f common.yml --load \
+ && docker-compose up -d -V
+ 
 # build the x64 image only 
 export $(grep -v '^#' .env | xargs) && \
-docker buildx bake -f common.yml --load service_x64 && \
-docker-compose up -d -V
+docker buildx bake -f common.yml --load \
+	--set *.platform=linux/amd64 \
+	--load \
+&& docker-compose up -d -V
 	
 # build all arch images and publish latest and 0.2 tags
 export $(grep -v '^#' .env | xargs) && \
