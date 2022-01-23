@@ -8,8 +8,7 @@ on:
   pull_request:
     branches: [ master ]
     paths:
-      - 'src/build/**'
-      - '.env'
+      - './.env'
 
 jobs:
 
