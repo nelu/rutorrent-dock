@@ -18,9 +18,9 @@ services:
     build:
       target: appbuild
       args:
+        FILEMANAGER_VER: master
         BUILDPLATFORM: linux/amd64
-        BUILDPLATFORM_SHORT: x64
-      context: ./src
+      context: ./src/build
 
   service_x86:
     image: ${SERVICE_IMAGE}
@@ -28,17 +28,15 @@ services:
       target: appbuild
       args:
         BUILDPLATFORM: linux/386
-        BUILDPLATFORM_SHORT: x32
-      context: ./src
+      context: ./src/build
 
   service_arm64:
-        image: ${SERVICE_IMAGE}
-        build:
-          target: appbuild
-          args:
-            BUILDPLATFORM: linux/arm64
-            BUILDPLATFORM_SHORT: arm
-          context: ./src
+    image: ${SERVICE_IMAGE}
+    build:
+      target: appbuild
+      args:
+        BUILDPLATFORM: linux/arm64
+      context: ./src/build
 
   service_arm32:
     image: ${SERVICE_IMAGE}
@@ -46,5 +44,4 @@ services:
       target: appbuild
       args:
         BUILDPLATFORM: linux/arm/v7
-        BUILDPLATFORM_SHORT: arm
-      context: ./src
+      context: ./src/build
