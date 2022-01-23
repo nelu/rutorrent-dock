@@ -28,6 +28,4 @@ jobs:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Build the Docker image
-      run: export $(grep -v '^#' .env | xargs) && docker build ./src/build/ --file ./src/build/Dockerfile --tag unzel/rutorrent-filemanager:latest --tag ${SERVICE_IMAGE}
-    - name: Docker Push
-      run: docker push unzel/rutorrent-filemanager
+      run: export $(grep -v '^#' .env | xargs) && docker buildx bake -f common.yml --set *.platform=linux/amd64,linux/386,linux/arm64,linux/arm/v7 --set *.tags=unzel/rutorrent-filemanager:latest --set *.tags=${SERVICE_IMAGE} --push
