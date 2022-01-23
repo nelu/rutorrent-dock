@@ -32,7 +32,9 @@ COPY vhost.conf /etc/apache2/sites-enabled/000-default.conf
 COPY --chown=${UID}:${GID} rtorrent.conf /home/runuser/.rtorrent.rc
 COPY entrypoint.sh  /usr/local/bin/entrypoint.sh
 
-FROM --platform=linux/amd64 alpine:latest as srcbuild
+FROM --platform=$BUILDPLATFORM osbuild as appbuild
+
+MAINTAINER hwk <user@somedomain.com>
 ARG BUILDPLATFORM
 
 ARG UID=1000
@@ -45,14 +47,20 @@ ARG FILEMANAGER_SHARE_VER=master
 ENV APP_HOME 	/usr/src/app
 ENV STORAGE_DIR     /data
 ENV PATH        $PATH:$APP_HOME
-RUN
 
-RUN apk update && apk add --no-cache curl tar \
-    && $(echo "${BUILDPLATFORM}" | grep "arm") \
-               || { BUILDPLATFORM_SHORT=$(echo "${BUILDPLATFORM}" | grep -q "64" && echo "x64" || echo "x32"); \
-                   curl https://www.rarlab.com/rar/rarlinux-${BUILDPLATFORM_SHORT}-610b3.tar.gz | tar -xzvf - -C /tmp/ \
-                   && cp -rfp /tmp/rar/rar /usr/bin/rar ; } \
-    && mkdir -p "$APP_HOME" "$STORAGE_DIR/downloads" "$STORAGE_DIR/.session" \
+ENV APP_HOME 	/usr/src/app
+ENV STORAGE_DIR     /data
+ENV PATH        $PATH:$APP_HOME
+
+
+
+RUN $(echo "${BUILDPLATFORM}" | grep -vq "arm") \
+               && { BUILDPLATFORM_SHORT=$(echo "${BUILDPLATFORM}" | grep -q "64" && echo "x64" || echo "x32"); \
+                   curl "https://www.rarlab.com/rar/rarlinux-${BUILDPLATFORM_SHORT}-610b3.tar.gz" | tar -xzvf - -C /tmp/ \
+                   && cp -rfp /tmp/rar/rar /usr/bin/rar ; \
+                   }
+
+RUN mkdir -p "$APP_HOME" "$STORAGE_DIR/downloads" "$STORAGE_DIR/.session" \
     && curl https://codeload.github.com/Novik/ruTorrent/tar.gz/${RUTORRENT_VER} | tar -xzf - --overwrite-dir --strip-components=1 -C "$APP_HOME" \
     && mkdir "$APP_HOME/plugins/filemanager" \
     && curl https://codeload.github.com/nelu/rutorrent-filemanager/tar.gz/${FILEMANAGER_VER} \
@@ -66,21 +74,8 @@ RUN apk update && apk add --no-cache curl tar \
     && chmod 775 -R "$APP_HOME" \
     && chown -R ${UID}:${GID} "$STORAGE_DIR"
 
-
-
 COPY config.php "$APP_HOME/conf/"
 
-
-FROM --platform=$BUILDPLATFORM osbuild as appbuild
-
-MAINTAINER hwk <user@somedomain.com>
-
-ENV APP_HOME 	/usr/src/app
-ENV STORAGE_DIR     /data
-ENV PATH        $PATH:$APP_HOME
-
-COPY --from=srcbuild "$APP_HOME" "$APP_HOME"
-COPY --from=srcbuild "$STORAGE_DIR" "$STORAGE_DIR"
 
 RUN chown -R www-data:www-data "$APP_HOME"
 
@@ -91,4 +86,3 @@ VOLUME ["$STORAGE_DIR", "/var/www/html"]
 CMD entrypoint.sh
 
 WORKDIR $APP_HOME
-

@@ -54,20 +54,19 @@ Build image from src/Dockerfile:
 Build multi arch images from common.yml using buildx:
 
  ``` bash
+# build the x64 image only 
+export $(grep -v '^#' .env | xargs) && \
+docker buildx bake -f common.yml --load service_x64 && \
+docker-compose up -d -V
+	
 # build all arch images and publish latest and 0.2 tags
-env $(cat .env | grep -v "#" | xargs) \
+export $(grep -v '^#' .env | xargs) && \
 docker buildx bake -f common.yml \
 	--set *.platform=linux/amd64,linux/arm64,linux/arm/v7,linux/386 \
 	--set *.tags=unzel/rutorrent-filemanager:latest \
 	--set *.tags=unzel/rutorrent-filemanager:0.2 \
 	--push
 	
-# build the x64 image only and publish latest tag
-env $(cat .env | grep -v "#" | xargs) \
-docker buildx bake -f common.yml \
-	--set *.platform=linux/amd64,linux/arm64,linux/arm/v7,linux/386 \
-	--set *.tags=unzel/rutorrent-filemanager:latest \
-	--push service_x64
  ```
 
 You should have rutorrent running on http://172.200.23.2/ in the 172.200.23.0/24 subnet
