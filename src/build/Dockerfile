@@ -33,7 +33,7 @@ RUN apt update && apt install -y sudo gosu bash unzip g++ make file re2c autocon
 COPY vhost.conf /etc/apache2/sites-enabled/000-default.conf
 COPY --chown=${UID}:${GID} rtorrent.conf /home/runuser/.rtorrent.rc
 COPY entrypoint.sh  /usr/local/bin/entrypoint.sh
-
+RUN chmod 775 /usr/local/bin/entrypoint.sh
 
 FROM osbuild as srcbuild
 ARG TARGETPLATFORM
