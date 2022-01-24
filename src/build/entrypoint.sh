@@ -2,17 +2,17 @@
 
 # auto populate volumes with code
 
-! [[ -e /var/www/html ]] \
-&& ln -s "$APP_HOME" /var/www/html \
-|| {
-    ! [[ "$(ls -A /var/www/html)" ]] && ! [[ -L /var/www/html ]] && {
-            echo "mount is empty"
-            ls -A /var/www/html
-            cp -rfp /usr/src/app/. /var/www/html/
-
+sync_empty() {
+    ! [[ -e "/var/www/html${1}" ]] \
+    && ln -s "$APP_HOME${1}" "/var/www/html${1}" \
+    || {
+        ! [[ "$(ls -A /var/www/html${1})" ]] && ! [[ -L "/var/www/html${1}" ]] && {
+                echo "sync_empty: mount is empty /var/www/html${1}"
+                ls -A "/var/www/html${1}"
+                cp -rfp "$APP_HOME${1}" "/var/www/html/"
+        }
     }
-
-
 }
-
+sync_empty ""
+sync_empty "/share"
 apache2-foreground

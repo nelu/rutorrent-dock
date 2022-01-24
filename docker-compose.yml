@@ -14,8 +14,8 @@ services:
       - ${LOGS_DIR}:/var/log/rutorrent:rw
       - ${RUTORRENT_TEMP_DIR}:/tmp:rw
       - ${RUTORRENT_DATA_DIR}:/data:rw
+      - ${RUTORRENT_SHARE_DIR}:/var/www/html/share:rw
 #      - ./config/rutorrent/vhost.conf:/etc/apache2/sites-enabled/000-default.conf
-#      - ${RUTORRENT_SHARE_DIR}:/usr/src/app/share:rw
 #      - ./config/rutorrent/conf:/usr/src/app/conf:ro
 #      - ./config/rutorrent/media.php:/usr/src/app/plugins/filemanager-media/conf.php:ro
 
@@ -62,8 +62,8 @@ services:
     expose:
       - "5000"
     ports:
-      - "55950-56000:55950-56000/tcp"
-      - "55950-56000:55950-56000/udp"
+      - "55950-55999:55950-55999/tcp"
+      - "55950-55999:55950-55999/udp"
 
 
 networks:

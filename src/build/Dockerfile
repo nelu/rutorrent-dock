@@ -29,12 +29,6 @@ RUN apt update && apt install -y sudo gosu bash unzip g++ make file re2c autocon
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /usr/src/php.tar.xz
 
-
-COPY vhost.conf /etc/apache2/sites-enabled/000-default.conf
-COPY --chown=${UID}:${GID} rtorrent.conf /home/runuser/.rtorrent.rc
-COPY entrypoint.sh  /usr/local/bin/entrypoint.sh
-RUN chmod 775 /usr/local/bin/entrypoint.sh
-
 FROM osbuild as srcbuild
 ARG TARGETPLATFORM
 
@@ -67,6 +61,12 @@ RUN mkdir -p "$APP_HOME" "$STORAGE_DIR/downloads" "$STORAGE_DIR/.session" \
      | tar -xzf - --overwrite-dir --strip-components=1 -C "$APP_HOME/plugins/filemanager-media" \
     && chmod 775 -R "$APP_HOME" \
     && chown -R ${UID}:${GID} "$STORAGE_DIR"
+
+
+COPY vhost.conf /etc/apache2/sites-enabled/000-default.conf
+COPY --chown=${UID}:${GID} rtorrent.conf /home/runuser/.rtorrent.rc
+COPY entrypoint.sh  /usr/local/bin/entrypoint.sh
+RUN chmod 775 /usr/local/bin/entrypoint.sh
 
 COPY config.php "$APP_HOME/conf/"
 RUN chown -R www-data:www-data "$APP_HOME"

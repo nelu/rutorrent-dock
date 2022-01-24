@@ -11,7 +11,7 @@ Any environment variables that needs to be used inside the containers can be edi
 Cloning project and setting permissions for rTorrent and ruTorrent data:
 ```bash
  git clone https://github.com/nelu/rutorrent-dock.git && cd rutorrent-dock \
- && chown 1000:1000 -R "./bt"
+ && chown 1000:1000 -R "./bt" && chown -R 775 "./bt"
 ```
 
 Host machine mount paths are configurable in the project `.env` file:
@@ -37,7 +37,7 @@ and might cause permission issues when running the project.
 
 You can set permissions with:
 ```bash 
-chown 1000:1000 -R "./bt" 
+chown 1000:1000 -R "./bt" && chown -R 775 "./bt"
 ```
 
 Contents of `./src/rutorrent` are created automatically from the 'web' container sources if the directory is empty 
