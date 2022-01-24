@@ -69,18 +69,18 @@ RUN mkdir -p "$APP_HOME" "$STORAGE_DIR/downloads" "$STORAGE_DIR/.session" \
     && chown -R ${UID}:${GID} "$STORAGE_DIR"
 
 COPY config.php "$APP_HOME/conf/"
+RUN chown -R www-data:www-data "$APP_HOME"
 
 
-FROM srcbuild as appbuild
+FROM ${ARCH}scratch as appbuild
 MAINTAINER hwk <nelu@github.com>
 ARG STORAGE_DIR=/data
 
 ENV APP_HOME 	/usr/src/app
 ENV PATH        $PATH:$APP_HOME
 
+COPY --from=srcbuild "/" "/"
 
-
-RUN chown -R www-data:www-data "$APP_HOME"
 
 STOPSIGNAL TERM
 
