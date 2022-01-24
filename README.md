@@ -78,4 +78,7 @@ docker buildx bake -f common.yml \
  ```
 
 
-You should have rutorrent running on http://<docker-host>:80/ inside the 172.200.23.0/24 docker subnet
+You should have rutorrent running on ```http://localhost:80/``` inside the 172.200.23.0/24 docker subnet
+
+#### Tutorials:
+[Running ruTorrent on a Raspberry PI 4 - Guide](https://github.com/nelu/rutorrent-dock/wiki/Running-ruTorrent-on-a-Raspberry-PI---Guide)
