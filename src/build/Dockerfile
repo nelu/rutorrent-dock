@@ -1,5 +1,5 @@
 ############################################################
-# Dockerfile to run a php fpm application#
+# Dockerfile to build ruTorrent and plugins
 #
 ############################################################
 

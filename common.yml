@@ -5,12 +5,12 @@ services:
   common-service:
     image: ${SERVICE_IMAGE}
     build:
-      #target: appbuild
+      target: appbuild
       args:
-        FILEMANAGER_VER: master
-        RUTORRENT_VER: master
-        FILEMANAGER_SHARE_VER: master
-        FILEMANAGER_MEDIA_VER: master
+        FILEMANAGER_VER: ${FILEMANAGER_VER}
+        RUTORRENT_VER: ${RUTORRENT_VER}
+        FILEMANAGER_SHARE_VER: ${FILEMANAGER_SHARE_VER}
+        FILEMANAGER_MEDIA_VER: ${FILEMANAGER_MEDIA_VER}
       context: ./src/build
     restart: on-failure
     env_file:
