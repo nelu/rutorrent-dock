@@ -29,6 +29,7 @@ Here is a config example where all container generated data is stored inside the
 LOGS_DIR=./bt/logs
 RUTORRENT_TEMP_DIR=./bt/tmp
 RUTORRENT_DATA_DIR=./bt/data
+RUTORRENT_SHARE_DIR=./bt/rutorrent-share
 
 RUTORRENT_SRC_DIR=./src/rutorrent
 ```
@@ -40,12 +41,17 @@ You can set permissions with:
 chown 1000:1000 -R "./bt" && chown -R 775 "./bt"
 ```
 
-Contents of `./src/rutorrent` are created automatically from the 'web' container sources if the directory is empty 
+Contents of `./src/rutorrent` and `./bt/rutorrent-share` are created automatically from the 'web' container sources if the directory is empty 
 
 
 Run using prebuilt image:
 
 ``` docker-compose pull && docker-compose up ```
+
+Update to latest version version and run:
+
+``` docker-compose pull && docker-compose up -V```
+
 
 
 Build image from src/Dockerfile:
