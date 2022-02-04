@@ -9,7 +9,7 @@ FROM ${ARCH}php:7.4.27-apache as osbuild
 ARG UID=1000
 ARG GID=1000
 RUN apt update && apt install -y sudo gosu bash unzip g++ make file re2c autoconf openssl libssl-dev libevent-dev \
-     rtorrent mediainfo gzip screen p7zip-full ffmpeg zip unrar-free \
+     rtorrent mediainfo gzip screen p7zip-full ffmpeg \
     && docker-php-ext-install sockets \
 	&& rm -rf /usr/local/etc/php/conf.d/*sockets.ini && docker-php-ext-enable --ini-name 20-sockets.ini sockets \
     && docker-php-ext-install  pcntl \
