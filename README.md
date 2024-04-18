@@ -17,9 +17,7 @@ Cloning project and setting permissions for rTorrent and ruTorrent data:
 Host machine mount paths are configurable in the project `.env` file:
  ```
  LOGS_DIR - contents of container /var/log/rutorrent
- RUTORRENT_TEMP_DIR - contents of container /tmp
  RUTORRENT_DATA_DIR - contents of container /data/.session and /data/downloads
- RUTORRENT_SHARE_DIR - contents of container rutorrent/share directory
  RUTORRENT_SRC_DIR - path to local source code for rutorrent
  ```
 See docker-compose.yml on how these variables and `./config/` files are being used 
@@ -27,9 +25,7 @@ See docker-compose.yml on how these variables and `./config/` files are being us
 Here is a config example where all container generated data is stored inside the project `./bt` directory :
 ```dotenv
 LOGS_DIR=./bt/logs
-RUTORRENT_TEMP_DIR=./bt/tmp
 RUTORRENT_DATA_DIR=./bt/data
-RUTORRENT_SHARE_DIR=./bt/rutorrent-share
 
 RUTORRENT_SRC_DIR=./src/rutorrent
 ```
@@ -41,7 +37,7 @@ You can set permissions with:
 chown 1000:1000 -R "./bt" && chown -R 775 "./bt"
 ```
 
-Contents of `./src/rutorrent` and `./bt/rutorrent-share` are created automatically from the 'web' container sources if the directory is empty 
+Contents of `./src/rutorrent` and `./bt/data/share` are created automatically from the 'web' container sources if the directory is empty 
 
 
 Run using prebuilt image:
