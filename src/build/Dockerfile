@@ -9,8 +9,10 @@ FROM ${ARCH}php:7.4.27-apache as osbuild
 ARG UID=1000
 ARG GID=1000
 RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list \
-    && apt update && apt install -y sudo gosu bash unzip g++ make file re2c autoconf openssl libssl-dev libevent-dev \
-        rtorrent mediainfo gzip screen p7zip-full p7zip-rar ffmpeg \
+    && apt update && apt install --no-install-recommends -y sudo gosu bash unzip g++ make file re2c autoconf openssl libssl-dev libevent-dev \
+        rtorrent mediainfo gzip screen p7zip-full p7zip-rar ffmpeg python3 python3-pip \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
+    && python3 -m pip install cloudscraper \
     && docker-php-ext-install sockets \
 	&& rm -rf /usr/local/etc/php/conf.d/*sockets.ini && docker-php-ext-enable --ini-name 20-sockets.ini sockets \
     && docker-php-ext-install  pcntl \
@@ -44,10 +46,17 @@ ARG FILEMANAGER_SHARE_VER=master
 
 ENV APP_HOME 	/usr/src/app
 
+COPY rar /usr/src/rarsrc
+
 RUN  echo "${TARGETPLATFORM}" | grep -q "arm" \
-           || { BUILDPLATFORM_SHORT=$(echo "${TARGETPLATFORM}" | grep -q "64" && echo "x64" || echo "x32"); \
-               curl https://www.rarlab.com/rar/rarlinux-${BUILDPLATFORM_SHORT}-610b3.tar.gz | tar -xzvf - -C /tmp/ \
-               && cp -rfp /tmp/rar/rar /usr/bin/rar ; } && exit 0;
+           || {  \
+            BUILDPLATFORM_SHORT=$(echo "${TARGETPLATFORM}" | grep -q "64" && echo "x64" || echo "x32"); \
+            RAR_DISTRO="/usr/src/rarsrc/rarlinux-${BUILDPLATFORM_SHORT}.tar.gz";  \
+             tar -xzvf "${RAR_DISTRO}" -C /tmp/ \
+              && cp -rfp /tmp/rar/rar /usr/bin/rar  \
+              && ln -s /usr/bin/rar /usr/bin/unrar; \
+            rm -rf /usr/src/rarsrc; \
+     } && exit 0
 
 RUN mkdir -p "$APP_HOME" "$STORAGE_DIR/downloads" "$STORAGE_DIR/.session" \
     && curl https://codeload.github.com/Novik/ruTorrent/tar.gz/${RUTORRENT_VER} | tar -xzf - --overwrite-dir --strip-components=1 -C "$APP_HOME" \
@@ -87,7 +96,7 @@ STOPSIGNAL TERM
 
 VOLUME ["$STORAGE_DIR", "/var/www/html"]
 
-CMD entrypoint.sh
+CMD exec entrypoint.sh
 
 WORKDIR $APP_HOME
 

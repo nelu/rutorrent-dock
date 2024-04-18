@@ -11,15 +11,14 @@ services:
       file: common.yml
     restart: always
     volumes:
-      - ${LOGS_DIR}:/var/log/rutorrent:rw
-      - ${RUTORRENT_TEMP_DIR}:/tmp:rw
-      - ${RUTORRENT_DATA_DIR}:/data:rw
-      - ${RUTORRENT_SHARE_DIR}:/var/www/html/share:rw
+      - tempdir:/tmp:rw
+      - persistent_data:/data:rw
+      - ./config/rutorrent/config.php:/usr/src/app/conf/config.php:ro
 #      - ./config/rutorrent/vhost.conf:/etc/apache2/sites-enabled/000-default.conf
-#      - ./config/rutorrent/conf:/usr/src/app/conf:ro
 #      - ./config/rutorrent/media.php:/usr/src/app/plugins/filemanager-media/conf.php:ro
 
       # local dev mount
+#     - ./src/build/entrypoint.sh:/usr/local/bin/entrypoint.sh
       - ${RUTORRENT_SRC_DIR}:/var/www/html
 
     # uncomment if traefik is not used
@@ -47,7 +46,7 @@ services:
     extends:
       service: common-service
       file: common.yml
-    command: gosu runuser sh -c '/bin/rm -rf /data/.session/rtorrent.lock && rtorrent || rtorrent'
+    command:  gosu runuser sh -c '/bin/rm -rf /data/.session/rtorrent.lock ; exec rtorrent'
     restart: always
     stdin_open: true
     tty: true
@@ -65,6 +64,20 @@ services:
       - "55950-55999:55950-55999/tcp"
       - "55950-55999:55950-55999/udp"
 
+
+volumes:
+  tempdir:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./bt/tmp
+  persistent_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./bt/data
 
 networks:
 #  webgateway:
