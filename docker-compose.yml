@@ -19,7 +19,7 @@ services:
 
       # local dev mount
 #     - ./src/build/entrypoint.sh:/usr/local/bin/entrypoint.sh
-      - ${RUTORRENT_SRC_DIR}:/var/www/html
+#      - ${RUTORRENT_SRC_DIR}:/var/www/html
 
     # uncomment if traefik is not used
     ports:
