@@ -79,7 +79,7 @@ COPY entrypoint.sh  /usr/local/bin/entrypoint.sh
 RUN chmod 775 /usr/local/bin/entrypoint.sh
 
 COPY config.php "$APP_HOME/conf/"
-RUN chown -R www-data:www-data "$APP_HOME"
+RUN chown -R www-data:www-data "$APP_HOME" && rm -rf /var/www/html && ln -s "$APP_HOME"  "/var/www/html"
 
 
 FROM ${ARCH}scratch as appbuild
