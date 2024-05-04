@@ -13,13 +13,14 @@ services:
     volumes:
       - tempdir:/tmp:rw
       - persistent_data:/data:rw
-      - ./config/rutorrent/config.php:/usr/src/app/conf/config.php:ro
+# override image configurations
+#      - ./config/rutorrent/config.php:/usr/src/app/conf/config.php:ro
 #      - ./config/rutorrent/vhost.conf:/etc/apache2/sites-enabled/000-default.conf
 #      - ./config/rutorrent/media.php:/usr/src/app/plugins/filemanager-media/conf.php:ro
 
-      # local dev mount
-#     - ./src/build/entrypoint.sh:/usr/local/bin/entrypoint.sh
-#      - ${RUTORRENT_SRC_DIR}:/var/www/html
+# development mounts
+#      - ./src/build/entrypoint.sh:/usr/local/bin/entrypoint.sh
+#      - ./src/rutorrent:/var/www/html
 
     # uncomment if traefik is not used
     ports:
@@ -71,13 +72,13 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ./bt/tmp
+      device: ${PERSISTENT_DATA_DIR}/tmp
   persistent_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ./bt/data
+      device: ${PERSISTENT_DATA_DIR}/data
 
 networks:
 #  webgateway:
