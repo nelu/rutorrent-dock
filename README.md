@@ -3,10 +3,6 @@
 
 Sample docker-compose project for running ruTorrent locally
 
-Sample ruTorrent configurations can be found in `./config/`
-
-Any environment variables that needs to be used inside the containers can be edited in `config/rutorrent/app.env`
-
 
 Cloning project and setting permissions for rTorrent and ruTorrent data:
 ```bash
@@ -14,32 +10,38 @@ Cloning project and setting permissions for rTorrent and ruTorrent data:
  && chown 1000:1000 -R "./bt" && chown -R 775 "./bt"
 ```
 
+### Configuration
+Sample ruTorrent configurations can be found in `./config/`
 Host machine mount paths are configurable in the project `.env` file:
- ```
- LOGS_DIR - contents of container /var/log/rutorrent
- RUTORRENT_DATA_DIR - contents of container /data/.session and /data/downloads
- RUTORRENT_SRC_DIR - path to local source code for rutorrent
- ```
-See docker-compose.yml on how these variables and `./config/` files are being used 
+
+PERSISTENT_DATA_DIR - Where to mount the persistent data volume (/data/.session /data/downloads /data/logs /data/share) locally in the project
 
 Here is a config example where all container generated data is stored inside the project `./bt` directory :
-```dotenv
-LOGS_DIR=./bt/logs
-RUTORRENT_DATA_DIR=./bt/data
+ ```
+# using ./bt as persistent data dir for this project
+PERSISTENT_DATA_DIR=./bt
+ ```
+See how these variables are being used in docker-compose.yml for a better picture
 
-RUTORRENT_SRC_DIR=./src/rutorrent
-```
 Since they are bind volume mounts, all paths will be created empty by docker on the first run if they do not exist.
 and might cause permission issues when running the project.
 
-You can set permissions with:
+Contents of `./src/rutorrent` and `./bt/data/` are created automatically from the 'web' container contents if the directory is empty. Permissions can be set with:
 ```bash 
 chown 1000:1000 -R "./bt" && chown -R 775 "./bt"
 ```
+Any environment variables that needs to be used inside the containers can be edited in `config/rutorrent/app.env`. 
 
-Contents of `./src/rutorrent` and `./bt/data/share` are created automatically from the 'web' container sources if the directory is empty 
 
+### Developer mode
+You can enable development mode and mount the whole rutorrent source code from `./src/rutorrent` inside the containers, by uncommenting `- ./src/rutorrent:/var/www/html` volume mount for the `web` service inside `docker-compose.yml`, like so:
+```
+# development mounts
+#      - ./src/build/entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - ./src/rutorrent:/var/www/html
+```
 
+### Running or building
 Run using prebuilt image:
 
 ``` docker-compose pull && docker-compose up ```
