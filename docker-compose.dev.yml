@@ -1,0 +1,30 @@
+
+# with traefik support on /rt/ endpoint
+
+services:
+
+  # apache front
+  web:
+    extends:
+      service: common-service
+      file: common.yml
+    volumes:
+# development mounts
+#      - ./src/build/entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - appsrc:/var/www/html
+    ports:
+      - "2080:80/tcp"
+
+volumes:
+  appsrc:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./src/rutorrent
+
+networks:
+  default:
+  webgateway:
+    external: false
+        

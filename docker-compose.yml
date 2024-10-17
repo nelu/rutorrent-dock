@@ -1,5 +1,3 @@
-version: '2.2'
-
 # with traefik support on /rt/ endpoint
 
 services:
@@ -17,20 +15,13 @@ services:
 #      - ./config/rutorrent/config.php:/usr/src/app/conf/config.php:ro
 #      - ./config/rutorrent/vhost.conf:/etc/apache2/sites-enabled/000-default.conf
 #      - ./config/rutorrent/media.php:/usr/src/app/plugins/filemanager-media/conf.php:ro
-
-# development mounts
-#      - ./src/build/entrypoint.sh:/usr/local/bin/entrypoint.sh
-#      - ./src/rutorrent:/var/www/html
-
     # uncomment if traefik is not used
     ports:
       - "80:80/tcp"
-
     expose:
       - 80
     networks:
-      default:
-        ipv4_address: 172.200.23.2
+      - default
 #      - webgateway  #traefik network
     labels:
        - "traefik.enable=true"
@@ -51,9 +42,6 @@ services:
     restart: always
     stdin_open: true
     tty: true
-    networks:
-      default:
-        ipv4_address: 172.200.23.3
     volumes_from:
       - web:rw
     volumes:
@@ -64,7 +52,8 @@ services:
     ports:
       - "55950-55999:55950-55999/tcp"
       - "55950-55999:55950-55999/udp"
-
+    labels:
+      - "traefik.enable=false"
 
 volumes:
   tempdir:
@@ -81,12 +70,9 @@ volumes:
       device: ${PERSISTENT_DATA_DIR}/data
 
 networks:
-#  webgateway:
-#    external:
-#      name: webrouter_gateway
   default:
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.200.23.0/24
+#  webgateway:
+#    external: true
+#    name: webrouter_gateway
+
         
