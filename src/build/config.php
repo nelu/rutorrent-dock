@@ -2,7 +2,7 @@
 	// configuration parameters
 
 	// for snoopy client
-	$httpUserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36';
+	$httpUserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36';
 	$httpTimeOut = 30;			// in seconds
 	$httpUseGzip = true;
 	$httpIP = null;				// IP string. Or null for any.
@@ -28,16 +28,16 @@
 	$do_diagnostic = true;			// Diagnose ruTorrent. Recommended to keep enabled, unless otherwise required.
 	$al_diagnostic = true;			// Diagnose auto-loader. Set to "false" to make composer plugins work.
 
-    $log_file = '/var/log/rutorrent/errors.log';	// path to log file (comment or leave blank to disable logging)
+	$log_file = $_ENV['LOG_FILE'] ?? '/tmp/errors.log'; // path to log file (comment or leave blank to disable logging)
 
 	$saveUploadedTorrents = true;		// Save uploaded torrents to profile/torrents directory or not
 	$overwriteUploadedTorrents = false;	// Overwrite existing uploaded torrents in profile/torrents directory or make unique name
 
-    $topDirectory = '/data/downloads';			// Upper available directory. Absolute path with trail slash.
+	$topDirectory = $_ENV['TOP_DIR'] ?? '/';			// Upper available directory. Absolute path with trail slash.
 	$forbidUserSettings = false;
 
-	$scgi_port = 5000;
-    $scgi_host = "rtorrent";
+	$scgi_port = $_ENV['SCGI_PORT'] ?? 5000;
+	$scgi_host = $_ENV['SCGI_HOST'] ?? "127.0.0.1";
 
 	// For web->rtorrent link through unix domain socket
 	// (scgi_local in rtorrent conf file), change variables
@@ -64,13 +64,17 @@
 	$cachedPluginLoading = false;		// Set to true to enable rapid cached loading of ruTorrent plugins
 										// Required to clear web browser cache when upgrading versions	
 
+	$pluginMinification = true; 	// Stable change to reduce loading times by minimizing JavaScript networked
+									// Only recommended to disable when required for debuging purposes
+
 	$localhosts = array(			// list of local interfaces
-        "rtorrent",
-        "127.0.0.1",
+		"127.0.0.1",
 		"localhost",
 	);
 
-	$profilePath = '/data/share';		// Path to user profiles
+    getenv("LOCALHOSTS") && $localhosts[] = $_ENV['LOCALHOSTS'];
+
+	$profilePath = $_ENV['PROFILE_PATH'] ?? '../../share';		// Path to user profiles
 	$profileMask = 0777;			// Mask for files and directory creation in user profiles.
 						// Both Webserver and rtorrent users must have read-write access to it.
 						// For example, if Webserver and rtorrent users are in the same group then the value may be 0770.
