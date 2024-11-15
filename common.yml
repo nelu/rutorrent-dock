@@ -2,16 +2,27 @@ version: '2.2'
 
 services:
 
+  build-base:
+    image: "${SERVICE_IMAGE}_base"
+    build:
+      target: osbuild
+      context: ./src/build
+    command: php -v
+
   common-service:
     image: ${SERVICE_IMAGE}
     build:
       target: appbuild
       args:
+        OSBUILD: "${SERVICE_IMAGE}_base"
         FILEMANAGER_VER: ${FILEMANAGER_VER}
         RUTORRENT_VER: ${RUTORRENT_VER}
         FILEMANAGER_SHARE_VER: ${FILEMANAGER_SHARE_VER}
         FILEMANAGER_MEDIA_VER: ${FILEMANAGER_MEDIA_VER}
       context: ./src/build
+    depends_on:
+      build-base:
+        condition: service_completed_successfully
     restart: on-failure
     env_file:
       - config/rutorrent/app.env

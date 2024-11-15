@@ -1,6 +1,11 @@
 # with traefik support on /rt/ endpoint
 
 services:
+  # base image first
+  build-base:
+    extends:
+      service: build-base
+      file: common.yml
 
   # apache front
   web:

@@ -5,6 +5,7 @@ services:
 
   # apache front
   web:
+    image: "${SERVICE_IMAGE}_dev"
     extends:
       service: common-service
       file: common.yml
