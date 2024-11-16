@@ -14,7 +14,6 @@ services:
     build:
       target: appbuild
       args:
-        OSBUILD: "${SERVICE_IMAGE}_base"
         FILEMANAGER_VER: ${FILEMANAGER_VER}
         RUTORRENT_VER: ${RUTORRENT_VER}
         FILEMANAGER_SHARE_VER: ${FILEMANAGER_SHARE_VER}
