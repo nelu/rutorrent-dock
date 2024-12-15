@@ -5,24 +5,27 @@
 
 ARG ARCH
 
-FROM ${ARCH}php:7.4.27-apache AS osbuild
+FROM ${ARCH}php:8.3-apache AS osbuild
 ENV APP_HOME=/usr/src/app
 ARG STORAGE_DIR=/data
 ARG TARGETPLATFORM
 ARG UID=1000
 ARG GID=1000
-RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list \
-    && apt update && apt install --no-install-recommends -y sudo gosu bash unzip g++ make file re2c autoconf openssl libssl-dev libevent-dev \
-        rtorrent mediainfo gzip screen p7zip-full p7zip-rar ffmpeg python3 python3-pip \
-    && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
-    && python3 -m pip install cloudscraper \
-    && docker-php-ext-install sockets pcntl \
-    && apt remove -y g++ make re2c autoconf libssl-dev libevent-dev \
-    && apt autoremove -y --purge \
+RUN      apt update && apt install --no-install-recommends -y sudo gosu bash unzip g++ make file re2c autoconf openssl libssl-dev libevent-dev \
+         #sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list && \
+        rtorrent mediainfo gzip screen p7zip-full \
+         # p7zip-rar \
+          ffmpeg  sox\
+         pipx python3-pip
+RUN  docker-php-ext-install sockets pcntl \
     && docker-php-source delete \
     && groupadd -g ${GID} runuser && useradd -u ${UID} -g ${GID} -m runuser \
     && usermod -a -G www-data runuser && usermod -a -G ${GID} www-data \
-    && rm -rf /var/www/html \
+     && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
+     && pip  install --break-system-packages cloudscraper \
+     && apt remove -y g++ make re2c autoconf libssl-dev libevent-dev \
+     && apt autoremove -y --purge \
+     && rm -rf /var/www/html \
 #    && ln -s $APP_HOME /var/www/html \
     && ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load \
     && ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/proxy.load \
@@ -45,7 +48,9 @@ RUN mkdir -p "$APP_HOME" "$STORAGE_DIR/downloads" "$STORAGE_DIR/.session" \
              tar -xzvf "${RAR_DISTRO}" -C /tmp/ \
               && cp -rfp /tmp/rar/rar /usr/bin/rar  \
               && ln -s /usr/bin/rar /usr/bin/unrar; \
-            rm -rf /usr/src/rarsrc; \
+            rm -rf /usr/src/rarsrc \
+            && curl -L https://github.com/TheGoblinHero/dumptorrent/releases/download/v1.3/dumptorrent_linux_amd64.tar.gz \
+                | tar -xzf - -C "/usr/bin"; \
      } && exit 0
 
 FROM osbuild AS srcbuild
@@ -82,7 +87,7 @@ RUN chown -R www-data:www-data "$APP_HOME" && rm -rf /var/www/html && ln -s "$AP
 
 
 FROM ${ARCH}osbuild AS appbuild
-MAINTAINER hwk <nelu@github.com>
+LABEL org.opencontainers.image.authors="hwk <nelu@github.com>"
 ARG STORAGE_DIR=/data
 
 ENV PATH="$PATH:$APP_HOME"
