@@ -26,7 +26,7 @@
 	$schedule_rand = 10;			// rand for schedulers start, +0..X seconds
 
 	$do_diagnostic = true;			// Diagnose ruTorrent. Recommended to keep enabled, unless otherwise required.
-	$al_diagnostic = true;			// Diagnose auto-loader. Set to "false" to make composer plugins work.
+	$al_diagnostic = false;			// Diagnose auto-loader. Set to "false" to make composer plugins work.
 
 	$log_file = $_ENV['RU_LOG_FILE'] ?? '/tmp/errors.log'; // path to log file (comment or leave blank to disable logging)
 
