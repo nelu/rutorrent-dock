@@ -11,12 +11,12 @@ ARG STORAGE_DIR=/data
 ARG TARGETPLATFORM
 ARG UID=1000
 ARG GID=1000
-RUN      apt update && apt install --no-install-recommends -y sudo gosu bash unzip g++ make file re2c autoconf openssl libssl-dev libevent-dev \
-         #sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list && \
-        rtorrent mediainfo gzip screen p7zip-full \
-         # p7zip-rar \
-          ffmpeg  sox\
-         pipx python3-pip
+RUN  sed -i 's/^Components: main$/& contrib non-free/' /etc/apt/sources.list.d/debian.sources \
+         && apt update && apt install --no-install-recommends -y sudo gosu bash unzip g++ make file re2c autoconf openssl libssl-dev libevent-dev \
+          rtorrent mediainfo \
+          gzip p7zip p7zip-full p7zip-rar \
+          ffmpeg  sox \
+          pipx python3-pip
 RUN  docker-php-ext-install sockets pcntl \
     && docker-php-source delete \
     && groupadd -g ${GID} runuser && useradd -u ${UID} -g ${GID} -m runuser \

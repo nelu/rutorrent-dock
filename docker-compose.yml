@@ -18,8 +18,6 @@ services:
       - persistent_data:/data:rw
 # override image configurations
 #      - ./config/rutorrent/config.php:/usr/src/app/conf/config.php:ro
-#      - ./config/rutorrent/vhost.conf:/etc/apache2/sites-enabled/000-default.conf
-#      - ./config/rutorrent/media.php:/usr/src/app/plugins/filemanager-media/conf.php:ro
     # uncomment if traefik is not used
     ports:
       - "80:80/tcp"
@@ -43,7 +41,7 @@ services:
     extends:
       service: common-service
       file: common.yml
-    command:  gosu runuser sh -c '/bin/rm -rf /data/.session/rtorrent.lock ; exec rtorrent'
+    command: su -c sh -c '/bin/rm -rf /data/.session/rtorrent.lock ; exec rtorrent' - runuser
     restart: always
     stdin_open: true
     tty: true
