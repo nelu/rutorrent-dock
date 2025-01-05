@@ -41,7 +41,7 @@ services:
     extends:
       service: common-service
       file: common.yml
-    command: su -c sh -c '/bin/rm -rf /data/.session/rtorrent.lock ; exec rtorrent' - runuser
+    command: su -P -l -c sh -c '/bin/rm -rf /data/.session/rtorrent.lock ; exec rtorrent' - runuser
     restart: always
     stdin_open: true
     tty: true
