@@ -4,6 +4,8 @@
 ############################################################
 
 ARG ARCH
+ARG RUTORRENT_VER=master
+
 FROM ${ARCH}php:8.3-apache AS osbuild
 ARG STORAGE_DIR=/data
 ARG TARGETPLATFORM
@@ -86,7 +88,6 @@ VOLUME ["$STORAGE_DIR", "/var/www/html"]
 CMD ["entrypoint.sh"]
 
 
-ARG RUTORRENT_VER=master
 
 FROM unzel/rutorrent:${RUTORRENT_VER} AS appbuild
 
