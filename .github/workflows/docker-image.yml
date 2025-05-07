@@ -34,4 +34,4 @@ jobs:
     - name: Fetch external binaries
       run: curl "https://www.win-rar.com/fileadmin/winrar-versions/rarlinux-x64-700.tar.gz" > ./src/build/rar/rarlinux-x64.tar.gz && curl "https://www.win-rar.com/fileadmin/winrar-versions/rarlinux-x32-700.tar.gz" > ./src/build/rar/rarlinux-x32.tar.gz
     - name: Build the Docker image
-      run: export $(grep -v '^#' stable.env | xargs) && && docker buildx bake -f common.yml --set *.platform=linux/amd64,linux/386,linux/arm64,linux/arm/v7 --print && docker buildx bake -f common.yml --set *.platform=linux/amd64,linux/386,linux/arm64,linux/arm/v7 --push
+      run: export $(grep -v '^#' stable.env | xargs) && docker buildx bake -f common.yml --set *.platform=linux/amd64,linux/386,linux/arm64,linux/arm/v7 --print && docker buildx bake -f common.yml --set *.platform=linux/amd64,linux/386,linux/arm64,linux/arm/v7 --push
