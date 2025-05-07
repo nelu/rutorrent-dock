@@ -53,8 +53,8 @@ RUN mkdir -p "$APP_HOME" "$STORAGE_DIR/downloads" "$STORAGE_DIR/.session" \
                 | tar -xzf - -C "/usr/bin"; \
      } && exit 0
 
-
-FROM osbuild AS rutorrent_src
+ARG ARCH
+FROM ${ARCH}unzel/rutorrent-filemanager_base AS rutorrent_src
 LABEL org.opencontainers.image.authors="hwk <nelu@github.com>"
 ARG STORAGE_DIR=/data
 
@@ -83,8 +83,10 @@ CMD ["entrypoint.sh"]
 
 WORKDIR $APP_HOME
 
+ARG RUTORRENT_VER=master
+ARG ARCH
 
-FROM rutorrent_src AS appbuild
+FROM ${ARCH}unzel/rutorrent:${RUTORRENT_VER} AS appbuild
 
 ARG UID=1000
 ARG GID=1000

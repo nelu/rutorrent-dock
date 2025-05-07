@@ -25,6 +25,7 @@ services:
     build:
       target: appbuild
       args:
+        RUTORRENT_VER: ${RUTORRENT_VER}
         FILEMANAGER_VER: ${FILEMANAGER_VER}
         FILEMANAGER_SHARE_VER: ${FILEMANAGER_SHARE_VER}
         FILEMANAGER_MEDIA_VER: ${FILEMANAGER_MEDIA_VER}
