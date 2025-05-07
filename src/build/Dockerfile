@@ -87,7 +87,7 @@ CMD ["entrypoint.sh"]
 
 ARG ARCH
 ARG RUTORRENT_VER
-FROM unzel/rutorrent:${RUTORRENT_VER} AS appbuild
+FROM ${ARCH}unzel/rutorrent:${RUTORRENT_VER} AS appbuild
 ARG FILEMANAGER_VER=master
 ARG FILEMANAGER_MEDIA_VER=master
 ARG FILEMANAGER_SHARE_VER=master

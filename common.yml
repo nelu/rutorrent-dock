@@ -5,6 +5,8 @@ services:
     image: "${SERVICE_IMAGE}_base"
     build:
       target: osbuild
+      args:
+        RUTORRENT_VER: ${RUTORRENT_VER}
       context: ./src/build
     command: php -v
 
