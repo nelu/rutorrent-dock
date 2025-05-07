@@ -53,46 +53,28 @@ RUN mkdir -p "$APP_HOME" "$STORAGE_DIR/downloads" "$STORAGE_DIR/.session" \
                 | tar -xzf - -C "/usr/bin"; \
      } && exit 0
 
-FROM osbuild AS srcbuild
 
-ARG UID=1000
-ARG GID=1000
-
-ARG RUTORRENT_VER=master
-ARG FILEMANAGER_VER=master
-ARG FILEMANAGER_MEDIA_VER=master
-ARG FILEMANAGER_SHARE_VER=master
-
-
-
-RUN mkdir -p "$APP_HOME" \
-    && curl https://codeload.github.com/Novik/ruTorrent/tar.gz/${RUTORRENT_VER} | tar -xzf - --overwrite-dir --strip-components=1 -C "$APP_HOME" \
-    && mkdir "$APP_HOME/plugins/filemanager" \
-    && curl https://codeload.github.com/nelu/rutorrent-filemanager/tar.gz/${FILEMANAGER_VER} \
-     | tar -xzf - --overwrite-dir --strip-components=1 -C "$APP_HOME/plugins/filemanager" \
-    && mkdir "$APP_HOME/plugins/filemanager-share" \
-    && curl https://codeload.github.com/nelu/rutorrent-filemanager-share/tar.gz/${FILEMANAGER_SHARE_VER} \
-    | tar -xzf - --overwrite-dir --strip-components=1 -C "$APP_HOME/plugins/filemanager-share" \
-    && mkdir "$APP_HOME/plugins/filemanager-media" \
-    && curl https://codeload.github.com/nelu/rutorrent-filemanager-media/tar.gz/${FILEMANAGER_MEDIA_VER} \
-     | tar -xzf - --overwrite-dir --strip-components=1 -C "$APP_HOME/plugins/filemanager-media"
-
-
-COPY --chown=${UID}:${GID} rtorrent.conf /home/runuser/.rtorrent.rc
-COPY entrypoint.sh  "$APP_HOME/entrypoint.sh"
-RUN chmod 775 "$APP_HOME/entrypoint.sh"
-
-COPY config.php "$APP_HOME/conf/"
-RUN chown -R www-data:www-data "$APP_HOME" && rm -rf /var/www/html && ln -s "$APP_HOME"  "/var/www/html"
-
-
-FROM ${ARCH}osbuild AS appbuild
+FROM osbuild AS rutorrent_src
 LABEL org.opencontainers.image.authors="hwk <nelu@github.com>"
 ARG STORAGE_DIR=/data
 
 ENV PATH="$PATH:$APP_HOME"
 
-COPY --from=srcbuild "$APP_HOME" "$APP_HOME"
+ARG UID=1000
+ARG GID=1000
+
+ARG RUTORRENT_VER=master
+
+RUN mkdir -p "$APP_HOME" \
+    && curl https://codeload.github.com/Novik/ruTorrent/tar.gz/${RUTORRENT_VER} | tar -xzf - --overwrite-dir --strip-components=1 -C "$APP_HOME"
+
+COPY --chown=${UID}:${GID} rtorrent.conf /home/runuser/.rtorrent.rc
+COPY entrypoint.sh  "$APP_HOME/entrypoint.sh"
+
+RUN chmod 775 "$APP_HOME/entrypoint.sh" \
+    && chown -R www-data:www-data "$APP_HOME" \
+    && rm -rf /var/www/html && ln -s "$APP_HOME"  "/var/www/html"
+
 STOPSIGNAL TERM
 
 VOLUME ["$STORAGE_DIR", "/var/www/html"]
@@ -100,5 +82,28 @@ VOLUME ["$STORAGE_DIR", "/var/www/html"]
 CMD ["entrypoint.sh"]
 
 WORKDIR $APP_HOME
+
+
+FROM rutorrent_src AS appbuild
+
+ARG UID=1000
+ARG GID=1000
+
+ARG FILEMANAGER_VER=master
+ARG FILEMANAGER_MEDIA_VER=master
+ARG FILEMANAGER_SHARE_VER=master
+
+RUN mkdir -p "$APP_HOME/plugins/filemanager" \
+    && curl https://codeload.github.com/nelu/rutorrent-filemanager/tar.gz/${FILEMANAGER_VER} \
+     | tar -xzf - --overwrite-dir --strip-components=1 -C "$APP_HOME/plugins/filemanager" \
+    && mkdir "$APP_HOME/plugins/filemanager-share" \
+    && curl https://codeload.github.com/nelu/rutorrent-filemanager-share/tar.gz/${FILEMANAGER_SHARE_VER} \
+    | tar -xzf - --overwrite-dir --strip-components=1 -C "$APP_HOME/plugins/filemanager-share" \
+    && mkdir "$APP_HOME/plugins/filemanager-media" \
+    && curl https://codeload.github.com/nelu/rutorrent-filemanager-media/tar.gz/${FILEMANAGER_MEDIA_VER} \
+     | tar -xzf - --overwrite-dir --strip-components=1 -C "$APP_HOME/plugins/filemanager-media" \
+    && chown -R www-data:www-data "$APP_HOME"
+
+
 
 

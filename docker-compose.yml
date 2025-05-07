@@ -47,9 +47,6 @@ services:
     tty: true
     volumes_from:
       - web:rw
-    volumes:
-#      - ./config/rtorrent.conf:/var/www/.rtorrent.rc:rw
-      - ./config/rtorrent.conf:/home/runuser/.rtorrent.rc:rw
     expose:
       - "5000"
     ports:
