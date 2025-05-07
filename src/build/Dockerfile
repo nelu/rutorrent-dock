@@ -4,13 +4,12 @@
 ############################################################
 
 ARG ARCH
-ENV APP_HOME=/usr/src/app
 ARG STORAGE_DIR=/data
 ARG TARGETPLATFORM
 ARG UID=1000
 ARG GID=1000
 FROM ${ARCH}php:8.3-apache AS osbuild
-
+ENV APP_HOME=/usr/src/app
 RUN  sed -i 's/^Components: main$/& contrib non-free/' /etc/apt/sources.list.d/debian.sources \
          && apt update && apt install --no-install-recommends -y sudo gosu bash unzip g++ make file re2c autoconf openssl libssl-dev libevent-dev \
           rtorrent mediainfo \
@@ -62,8 +61,6 @@ ARG GID=1000
 ARG RUTORRENT_VER=master
 FROM ${ARCH}unzel/rutorrent-filemanager_base AS rutorrent_src
 LABEL org.opencontainers.image.authors="hwk <nelu@github.com>"
-
-
 ENV PATH="$PATH:$APP_HOME"
 
 WORKDIR $APP_HOME
