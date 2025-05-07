@@ -15,8 +15,10 @@ RUN  sed -i 's/^Components: main$/& contrib non-free/' /etc/apt/sources.list.d/d
          && apt update && apt install --no-install-recommends -y sudo gosu bash unzip g++ make file re2c autoconf openssl libssl-dev libevent-dev \
           rtorrent mediainfo \
           gzip p7zip p7zip-full p7zip-rar \
-          ffmpeg  sox \
-          pipx python3-pip
+          ffmpeg sox python3-pip \
+         && pip install --no-cache-dir pipx \
+         && pipx ensurepath
+
 RUN  docker-php-ext-install sockets pcntl \
     && docker-php-source delete \
     && groupadd -g ${GID} runuser && useradd -u ${UID} -g ${GID} -m runuser \
