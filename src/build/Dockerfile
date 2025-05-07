@@ -85,8 +85,11 @@ VOLUME ["$STORAGE_DIR", "/var/www/html"]
 
 CMD ["entrypoint.sh"]
 
-ARG RUTORRENT_VER
+
+ARG RUTORRENT_VER=master
+
 FROM unzel/rutorrent:${RUTORRENT_VER} AS appbuild
+
 ARG FILEMANAGER_VER=master
 ARG FILEMANAGER_MEDIA_VER=master
 ARG FILEMANAGER_SHARE_VER=master
