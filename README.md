@@ -42,6 +42,10 @@ You can enable development mode and mount the whole rutorrent source code from `
 ```
 
 ### Running or building
+
+#### ruTorrent Stock Image
+https://hub.docker.com/r/unzel/rutorrent
+
 Run using prebuilt image:
 
 ``` docker-compose pull && docker-compose up ```
