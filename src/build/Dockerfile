@@ -4,12 +4,14 @@
 ############################################################
 
 ARG ARCH
+FROM ${ARCH}php:8.3-apache AS osbuild
 ARG STORAGE_DIR=/data
 ARG TARGETPLATFORM
 ARG UID=1000
 ARG GID=1000
-FROM ${ARCH}php:8.3-apache AS osbuild
+
 ENV APP_HOME=/usr/src/app
+
 RUN  sed -i 's/^Components: main$/& contrib non-free/' /etc/apt/sources.list.d/debian.sources \
          && apt update && apt install --no-install-recommends -y sudo gosu bash unzip g++ make file re2c autoconf openssl libssl-dev libevent-dev \
           rtorrent mediainfo \
@@ -55,12 +57,14 @@ RUN mkdir -p "$APP_HOME" "$STORAGE_DIR/downloads" "$STORAGE_DIR/.session" \
      } && exit 0
 
 ARG ARCH
+FROM ${ARCH}unzel/rutorrent-filemanager_base AS rutorrent_src
+LABEL org.opencontainers.image.authors="hwk <nelu@github.com>"
+
 ARG STORAGE_DIR=/data
 ARG UID=1000
 ARG GID=1000
 ARG RUTORRENT_VER=master
-FROM ${ARCH}unzel/rutorrent-filemanager_base AS rutorrent_src
-LABEL org.opencontainers.image.authors="hwk <nelu@github.com>"
+
 ENV PATH="$PATH:$APP_HOME"
 
 WORKDIR $APP_HOME
@@ -82,12 +86,11 @@ VOLUME ["$STORAGE_DIR", "/var/www/html"]
 CMD ["entrypoint.sh"]
 
 ARG ARCH
-ARG RUTORRENT_VER=master
+ARG RUTORRENT_VER
+FROM unzel/rutorrent:${RUTORRENT_VER} AS appbuild
 ARG FILEMANAGER_VER=master
 ARG FILEMANAGER_MEDIA_VER=master
 ARG FILEMANAGER_SHARE_VER=master
-FROM unzel/rutorrent:${RUTORRENT_VER} AS appbuild
-
 
 RUN mkdir -p "$APP_HOME/plugins/filemanager" \
     && curl https://codeload.github.com/nelu/rutorrent-filemanager/tar.gz/${FILEMANAGER_VER} \
