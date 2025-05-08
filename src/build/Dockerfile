@@ -59,7 +59,7 @@ RUN mkdir -p "$APP_HOME" "$STORAGE_DIR/downloads" "$STORAGE_DIR/.session" \
      } && exit 0
 
 
-FROM unzel/rutorrent-filemanager_base AS rutorrent_src
+FROM ${ARCH}unzel/rutorrent-filemanager:latest_base AS rutorrent_src
 LABEL org.opencontainers.image.authors="hwk <nelu@github.com>"
 
 ARG STORAGE_DIR=/data
@@ -89,7 +89,7 @@ CMD ["entrypoint.sh"]
 
 
 
-FROM unzel/rutorrent:${RUTORRENT_VER} AS appbuild
+FROM ${ARCH}unzel/rutorrent:${RUTORRENT_VER} AS appbuild
 
 ARG FILEMANAGER_VER=master
 ARG FILEMANAGER_MEDIA_VER=master

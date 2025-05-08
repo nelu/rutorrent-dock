@@ -31,7 +31,21 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USER }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-    - name: Fetch external binaries
-      run: curl "https://www.win-rar.com/fileadmin/winrar-versions/rarlinux-x64-700.tar.gz" > ./src/build/rar/rarlinux-x64.tar.gz && curl "https://www.win-rar.com/fileadmin/winrar-versions/rarlinux-x32-700.tar.gz" > ./src/build/rar/rarlinux-x32.tar.gz
-    - name: Build the Docker image
-      run: export $(grep -v '^#' stable.env | xargs) && docker buildx bake -f common.yml --set *.platform=linux/amd64,linux/386,linux/arm64,linux/arm/v7 --print && docker buildx bake -f common.yml --set *.platform=linux/amd64,linux/386,linux/arm64,linux/arm/v7 --push
+
+    - name: Build & Push base image if needed
+      run: |
+        export $(grep -v '^#' stable.env | xargs) 
+        if docker pull "$SERVICE_IMAGE_base" > /dev/null 2>&1; then
+          echo "Base image found, using cache."
+          echo "build_base=false" >> "$GITHUB_ENV"
+        else
+          echo "Base image not found, will build it."
+          echo "build_base=true" >> "$GITHUB_ENV"
+          docker buildx bake -f common.yml --set *.platform=linux/amd64,linux/386,linux/arm64,linux/arm/v7 --push build-base 
+        fi
+
+    - name: Build the Docker images
+      run: |
+        export $(grep -v '^#' stable.env | xargs) 
+        docker buildx bake -f common.yml --set *.platform=linux/amd64,linux/386,linux/arm64,linux/arm/v7 --push rutorrent-build \
+        && docker buildx bake -f common.yml --set *.platform=linux/amd64,linux/386,linux/arm64,linux/arm/v7 --push common-service
