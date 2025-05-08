@@ -19,7 +19,7 @@ RUN  sed -i 's/^Components: main$/& contrib non-free/' /etc/apt/sources.list.d/d
           rtorrent mediainfo \
           gzip p7zip p7zip-full p7zip-rar \
           ffmpeg sox python3-pip \
-         && pip install --no-cache-dir pipx \
+         && pip install --no-cache-dir --break-system-packages pipx \
          && pipx ensurepath
 
 RUN  docker-php-ext-install sockets pcntl \
