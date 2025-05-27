@@ -1,8 +1,7 @@
-
 services:
 
   build-base:
-    image: "${SERVICE_IMAGE}_base"
+    image: "${RUTORRENT_IMAGE}:base"
     build:
       target: osbuild
       args:
@@ -12,28 +11,24 @@ services:
 
   rutorrent-build:
     image: "${RUTORRENT_IMAGE}:${RUTORRENT_VER}"
+    extends:
+      service: build-base
     build:
       target: rutorrent_src
       args:
         RUTORRENT_VER: ${RUTORRENT_VER}
-      context: ./src/build
-    depends_on:
-      build-base:
-        condition: service_completed_successfully
 
   common-service:
     image: ${SERVICE_IMAGE}
     build:
       target: appbuild
       args:
+        RUTORRENT_IMG_SRC: "${RUTORRENT_IMAGE}:${RUTORRENT_VER}"
         RUTORRENT_VER: ${RUTORRENT_VER}
         FILEMANAGER_VER: ${FILEMANAGER_VER}
         FILEMANAGER_SHARE_VER: ${FILEMANAGER_SHARE_VER}
         FILEMANAGER_MEDIA_VER: ${FILEMANAGER_MEDIA_VER}
       context: ./src/build
-    depends_on:
-      rutorrent-build:
-        condition: service_completed_successfully
     restart: on-failure
     env_file:
       - config/app.env

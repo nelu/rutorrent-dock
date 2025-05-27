@@ -41,6 +41,9 @@ You can enable development mode and mount the whole rutorrent source code from `
       - ./src/rutorrent:/var/www/html
 ```
 
+#### Start the services building local dev images
+``docker compose -f docker-compose.yml -f docker-compose.dev.yml up``
+
 ### Running or building
 
 #### ruTorrent Stock Image

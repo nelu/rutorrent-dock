@@ -1,20 +1,45 @@
-
 # with traefik support on /rt/ endpoint
 
 services:
+  build-base:
+    image: "${RUTORRENT_IMAGE}:base_dev"
+    extends:
+      service: build-base
+      file: common.yml
+
+  rutorrent-build:
+    image: "${RUTORRENT_IMAGE}:${RUTORRENT_VER}_dev"
+    extends:
+      service: rutorrent-build
+      file: common.yml
+    build:
+      args:
+        RUTORRENT_IMG_SRC: "${RUTORRENT_IMAGE}:base_dev"
+    depends_on:
+      build-base:
+        condition: service_completed_successfully
+
+  rtorrent:
+    image: "${SERVICE_IMAGE}_dev"
 
   # apache front
   web:
-    # image: "${SERVICE_IMAGE}_dev"
+    image: "${SERVICE_IMAGE}_dev"
     extends:
       service: common-service
       file: common.yml
+    build:
+      args:
+        RUTORRENT_IMG_SRC: "${RUTORRENT_IMAGE}:${RUTORRENT_VER}_dev"
     volumes:
-# development mounts
-#      - ./src/build/entrypoint.sh:/usr/src/app/entrypoint.sh
+      # development mounts
+      #      - ./src/build/entrypoint.sh:/usr/src/app/entrypoint.sh
       - appsrc:/var/www/html
     ports:
       - "2080:80/tcp"
+    depends_on:
+      rutorrent-build:
+        condition: service_completed_successfully
 
 volumes:
   appsrc:

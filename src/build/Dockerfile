@@ -4,6 +4,7 @@
 ############################################################
 
 ARG ARCH
+ARG RUTORRENT_IMG_SRC="unzel/rutorrent"
 ARG RUTORRENT_VER=master
 
 FROM ${ARCH}php:8.3-apache AS osbuild
@@ -59,14 +60,14 @@ RUN mkdir -p "$APP_HOME" "$STORAGE_DIR/downloads" "$STORAGE_DIR/.session" \
      } && exit 0
 
 
-FROM ${ARCH}unzel/rutorrent-filemanager:latest_base AS rutorrent_src
+FROM ${ARCH}${RUTORRENT_IMG_SRC} AS rutorrent_src
 LABEL org.opencontainers.image.authors="hwk <nelu@github.com>"
 
 ARG STORAGE_DIR=/data
 ARG UID=1000
 ARG GID=1000
 ARG RUTORRENT_VER=master
-
+ENV APP_HOME=/usr/src/app
 ENV PATH="$PATH:$APP_HOME"
 
 WORKDIR $APP_HOME
@@ -75,9 +76,9 @@ RUN mkdir -p "$APP_HOME" \
     && curl https://codeload.github.com/Novik/ruTorrent/tar.gz/${RUTORRENT_VER} | tar -xzf - --overwrite-dir --strip-components=1 -C "$APP_HOME"
 
 COPY --chown=${UID}:${GID} rtorrent.conf /home/runuser/.rtorrent.rc
-COPY entrypoint.sh  "$APP_HOME/entrypoint.sh"
+COPY entrypoint.sh  "/usr/src/entrypoint.sh"
 
-RUN chmod 775 "$APP_HOME/entrypoint.sh" \
+RUN chmod 775 "/usr/src/entrypoint.sh" \
     && chown -R www-data:www-data "$APP_HOME" \
     && rm -rf /var/www/html && ln -s "$APP_HOME"  "/var/www/html"
 
@@ -85,12 +86,11 @@ STOPSIGNAL TERM
 
 VOLUME ["$STORAGE_DIR", "/var/www/html"]
 
-CMD ["entrypoint.sh"]
+CMD ["/usr/src/entrypoint.sh"]
 
 
 
-FROM ${ARCH}unzel/rutorrent:${RUTORRENT_VER} AS appbuild
-
+FROM ${ARCH}${RUTORRENT_IMG_SRC} AS appbuild
 ARG FILEMANAGER_VER=master
 ARG FILEMANAGER_MEDIA_VER=master
 ARG FILEMANAGER_SHARE_VER=master
@@ -105,7 +105,5 @@ RUN mkdir -p "$APP_HOME/plugins/filemanager" \
     && curl https://codeload.github.com/nelu/rutorrent-filemanager-media/tar.gz/${FILEMANAGER_MEDIA_VER} \
      | tar -xzf - --overwrite-dir --strip-components=1 -C "$APP_HOME/plugins/filemanager-media" \
     && chown -R www-data:www-data "$APP_HOME"
-
-
 
 
